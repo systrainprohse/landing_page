@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Papan Tugas - Kumpulan Link Anda</title>
+
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* Apply the Inter font family to the whole page */
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f8fafc; /* bg-slate-50 */
+      }
+
+      /* Loading Spinner Animation */
+      .loading-spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border-left-color: #4f46e5; /* indigo-600 */
+        animation: spin 1s ease infinite;
+      }
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Card Entrance Animation */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Class for the card link with elegant transitions */
+      .card-link {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+      .card-link:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.07);
+      }
+    </style>
+  </head>
+  <body class="text-gray-800">
+    <!-- Main container -->
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+      <!-- Header Section -->
+      <header class="text-center mb-10">
+        <h1 class="text-4xl font-bold text-gray-900">Papan Tugas Anda</h1>
+        <p class="text-gray-500 mt-2">
+          Akses cepat ke semua tautan penting Anda, di satu tempat.
+        </p>
+      </header>
+
+      <!-- Board Container - Using a responsive grid layout -->
+      <div
+        id="board-container"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-4 min-h-[300px]"
+      >
+        <!-- Loading State -->
+        <div
+          id="loading-state"
+          class="w-full flex flex-col items-center justify-center text-gray-500 md:col-span-2 lg:col-span-3 xl:col-span-4"
+        >
+          <div class="loading-spinner mb-4"></div>
+          <p>Memuat data dari Google Sheet...</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // URL untuk mengambil data CSV dari Google Sheet Anda.
+      const sheetId = "1E0avcervo5WuLTjSbn3shpVolPZ0GHALgAhDu2VmIwo";
+      const sheetName = "LANDING PAGE";
+      const googleSheetURL = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
+        sheetName
+      )}`;
+
+      // Kumpulan ikon SVG untuk dipilih secara acak
+      const icons = [
+        `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>`,
+        `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>`,
+        `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>`,
+        `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>`,
+        `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>`,
+        `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h8a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.707 4.293l.52-.52a1 1 0 011.414 0l.52.52m-2.454 0l1.225 1.225a1 1 0 001.414 0l1.225-1.225m-3.89 3.89l.52.52a1 1 0 001.414 0l.52-.52m-2.454 0l1.225 1.225a1 1 0 011.414 0l1.225-1.225M15 21v-4a1 1 0 00-1-1h-4a1 1 0 00-1 1v4M7 21v-4a1 1 0 011-1h4a1 1 0 011 1v4" /></svg>`,
+      ];
+
+      // Kumpulan warna pastel yang lembut dan elegan
+      const cardStyles = [
+        { bg: "bg-rose-50", icon: "text-rose-500" },
+        { bg: "bg-sky-50", icon: "text-sky-500" },
+        { bg: "bg-emerald-50", icon: "text-emerald-500" },
+        { bg: "bg-amber-50", icon: "text-amber-500" },
+        { bg: "bg-fuchsia-50", icon: "text-fuchsia-500" },
+        { bg: "bg-indigo-50", icon: "text-indigo-500" },
+      ];
+
+      // Fungsi untuk mengambil dan mem-parsing data CSV
+      async function fetchData() {
+        const boardContainer = document.getElementById("board-container");
+        const loadingState = document.getElementById("loading-state");
+
+        try {
+          const response = await fetch(googleSheetURL);
+          if (!response.ok)
+            throw new Error("Gagal mengambil data dari Google Sheet.");
+          const csvText = await response.text();
+          const data = parseCSV(csvText);
+
+          const groupedData = data.reduce((acc, row) => {
+            const category = row.KATAGORI || "Tanpa Kategori";
+            if (!acc[category]) acc[category] = [];
+            acc[category].push(row);
+            return acc;
+          }, {});
+
+          renderBoard(groupedData);
+        } catch (error) {
+          console.error(error);
+          boardContainer.innerHTML = `<p class="text-red-500 text-center w-full md:col-span-2 lg:col-span-3 xl:col-span-4">Error: ${error.message}. Pastikan Google Sheet dapat diakses publik.</p>`;
+        } finally {
+          if (loadingState) loadingState.style.display = "none";
+        }
+      }
+
+      // Fungsi sederhana untuk parsing CSV
+      function parseCSV(text) {
+        const lines = text.trim().split("\n");
+        const headers = lines[0]
+          .split(",")
+          .map((h) => h.trim().replace(/"/g, ""));
+        return lines.slice(1).map((line) => {
+          const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+          return headers.reduce((obj, header, i) => {
+            obj[header] = (values[i] || "").trim().replace(/^"|"$/g, "");
+            return obj;
+          }, {});
+        });
+      }
+
+      // Fungsi untuk merender papan tugas dari data yang sudah dikelompokkan
+      function renderBoard(groupedData) {
+        const boardContainer = document.getElementById("board-container");
+        boardContainer.innerHTML = "";
+        let animationDelay = 0;
+
+        for (const category in groupedData) {
+          const items = groupedData[category];
+          const column = document.createElement("div");
+          // The grid container now handles the layout, so no specific width or shrink class is needed.
+          column.style.animation = `fadeInUp 0.5s ${animationDelay}s both ease-out`;
+          animationDelay += 0.1;
+
+          let cardsHTML = "";
+          items.forEach((item) => {
+            const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+            const randomStyle =
+              cardStyles[Math.floor(Math.random() * cardStyles.length)];
+
+            cardsHTML += `
+                        <a href="${
+                          item.LINK || "#"
+                        }" target="_blank" class="card-link block ${
+              randomStyle.bg
+            } rounded-xl shadow-sm hover:shadow-lg overflow-hidden">
+                            <div class="h-24 flex items-center justify-center border-b border-black border-opacity-5 bg-white bg-opacity-20">
+                                <div class="text-center text-gray-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                    <p class="text-xs font-medium tracking-wider uppercase mt-2">Pratinjau</p>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="flex items-start gap-4">
+                                    <div class="flex-shrink-0 pt-1 ${
+                                      randomStyle.icon
+                                    }">${randomIcon}</div>
+                                    <div class="flex-grow">
+                                        <h3 class="font-semibold text-gray-800">${
+                                          item.JUDUL || "Tanpa Judul"
+                                        }</h3>
+                                        <p class="text-sm text-gray-500 mt-1">${
+                                          item.DESKRIPSI || ""
+                                        }</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>`;
+          });
+
+          column.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-700">${category}</h2>
+                        <span class="bg-slate-200 text-slate-600 text-sm font-medium px-2.5 py-1 rounded-full">${items.length}</span>
+                    </div>
+                    <div class="space-y-4">${cardsHTML}</div>`;
+
+          boardContainer.appendChild(column);
+        }
+      }
+
+      // Panggil fungsi fetch saat halaman dimuat
+      document.addEventListener("DOMContentLoaded", fetchData);
+    </script>
+  </body>
+</html>
